@@ -11,7 +11,7 @@ from pyhmmer import hmmsearch
 # from pandas import notnull
 
 __program__ = os.path.split(sys.argv[0])[-1]
-__version__ = "2024.4.18"
+__version__ = "2024.4.25"
 
 # Filter 
 def filter_hmmsearch_threshold(

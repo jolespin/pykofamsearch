@@ -13,14 +13,14 @@ exec(open('pykofamsearch/__init__.py').read())
 
 setup(name='pykofamsearch',
       version=__version__,
-      description='Kofam prediction using PyHmmer',
-      url='https://github.com/new-atlantis-labs/pykofamsearch',
+      description='Fast implementation of KofamScan optimized for high-memory systems using PyHmmer',
+      url='https://github.com/new-atlantis-labs/pykofamsearch-stable',
       author='Josh L. Espinoza',
       author_email='jolespin@newatlantis.io, jol.espinoz@gmail.com',
       license='MIT License',
       packages=["pykofamsearch"],
       install_requires=[
-      "pyhmmer >=0.10.11",
+      "pyhmmer >=0.10.12",
       "pandas",
       "tqdm",
       ],

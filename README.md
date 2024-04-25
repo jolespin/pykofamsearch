@@ -9,7 +9,7 @@ Fast implementation of [`KofamScan`](https://github.com/takaram/kofam_scan) opti
 |               | KofamScan     | 21:53           | 3:40       |
 | Enzymes       | PyKofamSearch | 7:39            | 0:56       |
 
-\* Time in minutes for 4977 proteins in `data/test.faa.gz`.  
+\* Time in minutes for 4977 proteins in `test/test.faa.gz`.  
 
 Official benchmarking for `hmmsearch` algorithm implemented in `PyHMMER`  against `HMMER` from [Larralde et al. 2023](https://academic.oup.com/bioinformatics/article/39/5/btad214/7131068): 
 
@@ -24,11 +24,12 @@ Recommended usage for `PyKofamSearch` is on systems with 1) high RAM;  2) large 
     ```bash
     # Download database
     DATABASE_DIRECTORY=/path/to/database_directory/
+    mkdir -p ${DATABASE_DIRECTORY}/Annotate/KOFAM/
     wget -v -O - ftp://ftp.genome.jp/pub/db/kofam/ko_list.gz | gzip -d > ${DATABASE_DIRECTORY}/Annotate/KOFAM/ko_list
     wget -v -c ftp://ftp.genome.jp/pub/db/kofam/profiles.tar.gz -O - |  tar -xz
 
     # Run PyKofamSearch
-    pykofamsearch.py -i data/test.faa.gz  -o output.tsv -b ${DATABASE_DIRECTORY} -p=-1
+    pykofamsearch.py -i test/test.faa.gz  -o output.tsv -b ${DATABASE_DIRECTORY}/Annotate/KOFAM -p=-1
     ```
 
 * #### Using the serialized database files:
@@ -37,10 +38,10 @@ Recommended usage for `PyKofamSearch` is on systems with 1) high RAM;  2) large 
 
     ```bash
     # Full database
-    pykofamsearch.py -i data/test.faa.gz  -o output.tsv -b ~/Databases/KOFAM/database.pkl.gz -p=-1
+    pykofamsearch.py -i test/test.faa.gz  -o output.tsv -b ~/Databases/KOFAM/database.pkl.gz -p=-1
 
     # Enzymes only
-    pykofamsearch.py -i data/test.faa.gz  -o output.enzymes.tsv -b ~/Databases/KOFAM/database.enzymes.pkl.gz -p=-1
+    pykofamsearch.py -i test/test.faa.gz  -o output.enzymes.tsv -b ~/Databases/KOFAM/database.enzymes.pkl.gz -p=-1
     ```
 
 
@@ -109,13 +110,13 @@ Database arguments:
 
 * From **reformat_pykofamsearch.py** with **-b/--best_hits_only**:
 
-    | id_protein                 | id     | name                                                     | evalue       | score |   |
-    |----------------------------|--------|----------------------------------------------------------|--------------|-------|---|
-    | SRR13615825__k127_135326_1 | K00012 | UDPglucose 6-dehydrogenase [EC:1.1.1.22]                 | 7.34282e-188 | 624.5 |   |
-    | SRR13615825__k127_87070_1  | K00012 | UDPglucose 6-dehydrogenase [EC:1.1.1.22]                 | 1.15847e-142 | 475.1 |   |
-    | SRR13615825__k127_278295_3 | K00042 | 2-hydroxy-3-oxopropionate reductase [EC:1.1.1.60]        | 2.58098e-118 | 394.1 |   |
-    | SRR13615825__k127_23043_1  | K00033 | 6-phosphogluconate dehydrogenase [EC:1.1.1.44 1.1.1.343] | 8.14325e-108 | 359.8 |   |
-    | SRR13615825__k127_72951_1  | K00053 | ketol-acid reductoisomerase [EC:1.1.1.86]                | 1.54591e-108 | 362.2 |   |
+    | id_protein                 | id     | name                                                     | evalue       | score |
+    |----------------------------|--------|----------------------------------------------------------|--------------|-------|
+    | SRR13615825__k127_135326_1 | K00012 | UDPglucose 6-dehydrogenase [EC:1.1.1.22]                 | 7.34282e-188 | 624.5 |
+    | SRR13615825__k127_87070_1  | K00012 | UDPglucose 6-dehydrogenase [EC:1.1.1.22]                 | 1.15847e-142 | 475.1 |
+    | SRR13615825__k127_278295_3 | K00042 | 2-hydroxy-3-oxopropionate reductase [EC:1.1.1.60]        | 2.58098e-118 | 394.1 |
+    | SRR13615825__k127_23043_1  | K00033 | 6-phosphogluconate dehydrogenase [EC:1.1.1.44 1.1.1.343] | 8.14325e-108 | 359.8 |
+    | SRR13615825__k127_72951_1  | K00053 | ketol-acid reductoisomerase [EC:1.1.1.86]                | 1.54591e-108 | 362.2 |
 
 
 #### If you use this tool, please cite the following sources: 
