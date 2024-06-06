@@ -28,6 +28,7 @@ setup(name='pykofamsearch',
      scripts=[
          "pykofamsearch/pykofamsearch.py",
          "pykofamsearch/reformat_pykofamsearch.py",
+         "pykofamsearch/serialize_kofam_models.py",
          ],
 
 )

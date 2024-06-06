@@ -1,7 +1,20 @@
 # PyKofamSearch
 Fast implementation of [`KofamScan`](https://github.com/takaram/kofam_scan) optimized for high-memory systems using [`PyHmmer`](https://github.com/althonos/pyhmmer).  `PyKofamSearch` can handle fasta in uncompressed or gzip format and databases in either HMM or Python pickle serialized format.  No intermediate files are created. 
 
-#### Benchmarking
+### Installation:
+
+```
+pip install pykofamsearch
+``` 
+
+### Dependencies: 
+
+* pyhmmer >=0.10.12
+* pandas
+* tqdm
+
+
+### Benchmarking
 
 | Database      | Tool          | Single Threaded | 12 Threads |
 |---------------|---------------|-----------------|------------|
@@ -25,11 +38,17 @@ Recommended usage for `PyKofamSearch` is on systems with 1) high RAM;  2) large 
     # Download database
     DATABASE_DIRECTORY=/path/to/database_directory/
     mkdir -p ${DATABASE_DIRECTORY}/Annotate/KOFAM/
-    wget -v -O - ftp://ftp.genome.jp/pub/db/kofam/ko_list.gz | gzip -d > ${DATABASE_DIRECTORY}/Annotate/KOFAM/ko_list
+    wget -v -O - ftp://ftp.genome.jp/pub/db/kofam/ko_list.gz | gzip -d > ko_list
     wget -v -c ftp://ftp.genome.jp/pub/db/kofam/profiles.tar.gz -O - |  tar -xz
 
     # Run PyKofamSearch
     pykofamsearch.py -i test/test.faa.gz  -o output.tsv -b ${DATABASE_DIRECTORY}/Annotate/KOFAM -p=-1
+    ```
+
+* #### Build a serialized database:
+
+    ```bash
+    serialize_kofam_models.py -d path/to/profiles/ -k path/to/ko_list -b path/to/database.pkl.gz
     ```
 
 * #### Using the serialized database files:
