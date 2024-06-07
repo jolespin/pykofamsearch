@@ -6,7 +6,7 @@ import pandas as pd
 
 
 __program__ = os.path.split(sys.argv[0])[-1]
-__version__ = "2024.6.6"
+__version__ = "2024.6.8"
 
 def main(args=None):
     # Path info
@@ -67,18 +67,23 @@ def main(args=None):
                     output[id_protein]["evalue"] = evalue
                     output[id_protein]["score"] = score
         df_output = pd.DataFrame(output).T
+        if df_output.empty:
+            df_output = pd.Dataframe(columns=["id", "name", "evalue", "score"])
     else:
-        output = defaultdict(lambda: defaultdict(list))
-        for line in tqdm(f_input, desc="Reading PyKofamSearch"):
-            line = line.strip()
-            if line:
-                id_protein, id_ko, threshold, score, evalue, definition = line.split("\t")
-                output[id_protein]["ids"].append(id_ko)
-                output[id_protein]["names"].append(definition)
-                output[id_protein]["evalues"].append(float(evalue))
-                output[id_protein]["scores"].append(float(score))
-        df_output = pd.DataFrame(output).T
-        df_output.insert(0, "number_of_hits", df_output["ids"].map(len))
+        try:
+            output = defaultdict(lambda: defaultdict(list))
+            for line in tqdm(f_input, desc="Reading PyKofamSearch"):
+                line = line.strip()
+                if line:
+                    id_protein, id_ko, threshold, score, evalue, definition = line.split("\t")
+                    output[id_protein]["ids"].append(id_ko)
+                    output[id_protein]["names"].append(definition)
+                    output[id_protein]["evalues"].append(float(evalue))
+                    output[id_protein]["scores"].append(float(score))
+            df_output = pd.DataFrame(output).T
+            df_output.insert(0, "number_of_hits", df_output["ids"].map(len))
+        except KeyError:
+            df_output = pd.DataFrame(columns=["number_of_hits", "ids", "names", "evalues", "scores"])
     df_output.index.name = "id_protein"
 
     if opts.format == "pickle":

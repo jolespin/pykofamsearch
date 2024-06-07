@@ -5,7 +5,7 @@ from tqdm import tqdm
 from pyhmmer.plan7 import HMMFile
 
 __program__ = os.path.split(sys.argv[0])[-1]
-__version__ = "2024.6.6"
+__version__ = "2024.6.8"
 
 def main(args=None):
     # Options

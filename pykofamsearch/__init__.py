@@ -1,2 +1,2 @@
 #!/usr/bin/env python
-__version__ = "2024.6.6"
+__version__ = "2024.6.8"

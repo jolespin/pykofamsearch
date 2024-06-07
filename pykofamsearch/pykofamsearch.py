@@ -11,7 +11,7 @@ from pyhmmer import hmmsearch
 # from pandas import notnull
 
 __program__ = os.path.split(sys.argv[0])[-1]
-__version__ = "2024.6.6"
+__version__ = "2024.6.8"
 
 # Filter 
 def filter_hmmsearch_threshold(
@@ -52,7 +52,10 @@ def main(args=None):
 
     # Parser
     parser = argparse.ArgumentParser(description=description, usage=usage, epilog=epilog, formatter_class=argparse.RawTextHelpFormatter)
+
     # Pipeline
+    parser.add_argument("--verbosity", type=int, default=1, help="Verbosity of missing KOfams [Default: 1]")
+
     parser_io = parser.add_argument_group('I/O arguments')
     parser_io.add_argument("-i","--proteins", type=str, default="stdin", help = "path/to/proteins.fasta. stdin does not stream and loads everything into memory. [Default: stdin]")
     parser_io.add_argument("-o","--output", type=str, default="stdout", help = "path/to/output.tsv [Default: stdout]")
@@ -69,7 +72,7 @@ def main(args=None):
     parser_database = parser.add_argument_group('Database arguments')
     parser_database.add_argument("-d", "--database_directory", type=str, help="path/to/kofam_database_directory/ cannot be used with -b/-serialized_database")
     parser_database.add_argument("-b", "--serialized_database", type=str, help="path/to/database.pkl cannot be used with -d/--database_directory")
-    # parser_database.add_argument("-e", "--enzymes", action="store_true", help="Only use KOFAM with Enzyme Commission identifiers")
+    # parser_database.add_argument("-e", "--enzymes", action="store_true", help="Only use KOfam with Enzyme Commission identifiers")
 
 
     opts = parser.parse_args()
@@ -136,10 +139,6 @@ def main(args=None):
             except FileNotFoundError:
                 missing_kos.add(id_ko)
 
-        if opts.missing_kos:
-            with open(opts.missing_kos, "w") as f:
-                for id_ko in sorted(missing_kos):
-                    print(id_ko, file=f)
 
 
     # Output
@@ -220,6 +219,20 @@ def main(args=None):
     # Output close
     if f_output != sys.stdout:
         f_output.close()
+        
+    # Verbosity
+    # =========
+    if opts.verbosity == -1:
+        opts.verbosity = 123456789
+    if opts.verbosity > 0:
+        print("------------------------", file=sys.stderr)
+        print("Number of missing KOfams: {}".format(len(missing_kos)), file=sys.stderr)
+        print("------------------------", file=sys.stderr)
+
+        if opts.verbosity > 1:
+            if len(missing_kos):
+                for id_ko in missing_kos:
+                    print(f"Missing KOfam: {id_ko}", file=sys.stderr)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
