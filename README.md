@@ -27,7 +27,7 @@ pip install pykofamsearch
 Official benchmarking for `hmmsearch` algorithm implemented in `PyHMMER`  against `HMMER` from [Larralde et al. 2023](https://academic.oup.com/bioinformatics/article/39/5/btad214/7131068): 
 
 
-<img src="https://oup.silverchair-cdn.com/oup/backfile/Content_public/Journal/bioinformatics/39/5/10.1093_bioinformatics_btad214/1/btad214f1.jpeg?Expires=1716479409&Signature=B-25mnmvqyodugkDRYrEN-LyPsuPGUyaJQK9cAunlZjzNOgBlPgKlLQD9FNzzo0TZAu3lTMwzPTjGVafUIXHaoFGaME3nMIiNVdG-8TPXz2KaHXaUEZUmZMFH1EZr93ofpZbpvEWAbDuv9HFsHWUitsXgtCLg4cNB86dtPSJXBwhuMZo-PQ0Z8gCYLKPRXsaYnOaMcw~utxxFVM~jt0p21RgnCElLK49-lqY3kipZwmEvmYThOKEbNYubgCdJphMwrF5R41mJWAy7PqqcpzCXJJ0WiEOwjkhd3SlPlOUlxpqrMrOb0ETYlnJVMZZp4Ny6Foga1NSZyo6xs-O~FNCOA__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA" alt="drawing" width="500"/>
+<img src="images/pyhmmer-benchmarking.jpeg" alt="drawing" width="500"/>
 
 ### Usage:
 Recommended usage for `PyKofamSearch` is on systems with 1) high RAM;  2) large numbers of threads; and/or 3) reading/writing to disk is charged (e.g., AWS EFS).  Also useful when querying a large number of proteins. 
