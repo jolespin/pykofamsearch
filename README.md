@@ -38,8 +38,9 @@ Recommended usage for `PyKofamSearch` is on systems with 1) high RAM;  2) large 
     # Download database
     DATABASE_DIRECTORY=/path/to/database_directory/
     mkdir -p ${DATABASE_DIRECTORY}/Annotate/KOFAM/
-    wget -v -O - ftp://ftp.genome.jp/pub/db/kofam/ko_list.gz | gzip -d > ko_list
+    wget -v -O - ftp://ftp.genome.jp/pub/db/kofam/ko_list.gz | gzip -d > ${DATABASE_DIRECTORY}/Annotate/KOFAM/ko_list
     wget -v -c ftp://ftp.genome.jp/pub/db/kofam/profiles.tar.gz -O - |  tar -xz
+    mv profiles ${DATABASE_DIRECTORY}/Annotate/KOFAM/
 
     # Run PyKofamSearch
     pykofamsearch.py -i test/test.faa.gz  -o output.tsv -b ${DATABASE_DIRECTORY}/Annotate/KOFAM -p=-1
