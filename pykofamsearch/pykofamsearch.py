@@ -147,7 +147,7 @@ def main(args=None):
         f_output = sys.stdout 
     else:
         if opts.output.endswith(".gz"):
-            f_output = open(opts.output, "wt")
+            f_output = gzip.open(opts.output, "wt")
         else:
             f_output = open(opts.output, "w")
 
