@@ -146,7 +146,10 @@ def main(args=None):
     if opts.output == "stdout":
         f_output = sys.stdout 
     else:
-        f_output = open(opts.output, "w")
+        if opts.output.endswith(".gz"):
+            f_output = open(opts.output, "wt")
+        else:
+            f_output = open(opts.output, "w")
 
     if not opts.no_header:
         print("id_protein", "id_ko", "threshold", "score", "e-value", "definition", sep="\t", file=f_output)
