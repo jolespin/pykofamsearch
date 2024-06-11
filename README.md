@@ -43,7 +43,7 @@ Recommended usage for `PyKofamSearch` is on systems with 1) high RAM;  2) large 
     mv profiles ${DATABASE_DIRECTORY}/Annotate/KOFAM/
 
     # Run PyKofamSearch
-    pykofamsearch.py -i test/test.faa.gz  -o output.tsv -b ${DATABASE_DIRECTORY}/Annotate/KOFAM -p=-1
+    pykofamsearch.py -i test/test.faa.gz  -o output.tsv -d ${DATABASE_DIRECTORY}/Annotate/KOFAM -p=-1
     ```
 
 * #### Build a serialized database:
