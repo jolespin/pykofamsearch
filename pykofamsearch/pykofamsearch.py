@@ -23,7 +23,7 @@ def filter_hmmsearch_threshold(
     ):
     # If threshold is not None
     if threshold:
-        threshold = threshold * threshold_scale
+        threshold = round(threshold * threshold_scale, 2)
     # If there is no score_type value then there is no threshold or profile_type values
     if not return_failed_threshold:
         if score_type:
@@ -188,11 +188,11 @@ def main(args=None):
                 if hit.included:
                     result = filter_hmmsearch_threshold(hit, threshold, opts.threshold_scale, score_type, return_failed_threshold=False)
                     if result:
-                        threshold, score, evalue = result
+                        scaled_threshold, score, evalue = result
                         print(
                             hit.name.decode(), 
                             id_ko, 
-                            threshold, 
+                            scaled_threshold, 
                             "{:0.3f}".format(score), 
                             "{:0.5e}".format(evalue), 
                             definition, 
@@ -211,12 +211,12 @@ def main(args=None):
             for hit in hits:
                 if hit.included:
                     result = filter_hmmsearch_threshold(hit, threshold, opts.threshold_scale, score_type, return_failed_threshold=True)
-                    threshold, score, evalue = result
-                    threshold = "" if threshold is None else threshold
+                    scaled_threshold, score, evalue = result
+                    scaled_threshold = "" if scaled_threshold is None else scaled_threshold
                     print(
                         hit.name.decode(), 
                         id_ko, 
-                        threshold, 
+                        scaled_threshold, 
                         "{:0.3f}".format(score), 
                         "{:0.5e}".format(evalue), 
                         definition, 
