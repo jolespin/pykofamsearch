@@ -102,6 +102,7 @@ def main(args=None):
         else:
             f = open(opts.serialized_database, "rb")
         ko_to_data, name_to_hmm = pickle.load(f)
+        missing_kos = ko_to_data.keys() - name_to_hmm.keys()
         f.close()
 
     else:
