@@ -21,9 +21,10 @@ def filter_hmmsearch_threshold(
     score_type:str,
     return_failed_threshold:bool,
     ):
+    # If threshold is not None
+    if threshold:
+        threshold = threshold * threshold_scale
     # If there is no score_type value then there is no threshold or profile_type values
-
-    threshold = round(threshold * threshold_scale, 2)
     if not return_failed_threshold:
         if score_type:
             if score_type == "domain":
