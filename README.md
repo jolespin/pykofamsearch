@@ -97,6 +97,8 @@ HMMSearch arguments:
 -e EVALUE, --evalue EVALUE
                         E-value threshold [Default: 0.1]
 -a, --all_hits        Return all hits and do not use curated threshold. Not recommended for large queries.
+-t, --threshold_scale THRESHOLD_SCALE
+                        Multiplier for the curated thresholds. Higher values will make the annotation more strict [Default: 1.0]
 
 Database arguments:
 -d DATABASE_DIRECTORY, --database_directory DATABASE_DIRECTORY
