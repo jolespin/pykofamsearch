@@ -1,0 +1,13 @@
+LICENSE
+README.md
+setup.py
+pykofamsearch/__init__.py
+pykofamsearch/pykofamsearch.py
+pykofamsearch/reformat_enzymes.py
+pykofamsearch/reformat_pykofamsearch.py
+pykofamsearch/serialize_kofam_models.py
+pykofamsearch.egg-info/PKG-INFO
+pykofamsearch.egg-info/SOURCES.txt
+pykofamsearch.egg-info/dependency_links.txt
+pykofamsearch.egg-info/requires.txt
+pykofamsearch.egg-info/top_level.txt
