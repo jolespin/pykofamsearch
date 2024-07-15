@@ -5,7 +5,7 @@ from tqdm import tqdm
 from pyhmmer.plan7 import HMMFile
 
 __program__ = os.path.split(sys.argv[0])[-1]
-__version__ = "2024.6.8"
+__version__ = "2024.7.15"
 
 def main(args=None):
     # Options
@@ -74,6 +74,7 @@ def main(args=None):
                     name_to_hmm[id_ko] = hmm
         except FileNotFoundError:
             missing_kos.add(id_ko)
+    assert len(name_to_hmm), "No HMM files detected in {}.  Are you sure this is a profiles/ directory?".format(opts.profiles)
         
     # Output
     # ======
