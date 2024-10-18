@@ -43,13 +43,13 @@ Recommended usage for `PyKofamSearch` is on systems with 1) high RAM;  2) large 
     mv profiles ${DATABASE_DIRECTORY}/Annotate/KOFAM/
 
     # Run PyKofamSearch
-    pykofamsearch.py -i test/test.faa.gz  -o output.tsv -d ${DATABASE_DIRECTORY}/Annotate/KOFAM -p=-1
+    pykofamsearch -i test/test.faa.gz  -o output.tsv -d ${DATABASE_DIRECTORY}/Annotate/KOFAM -p=-1
     ```
 
 * #### Build a serialized database:
 
     ```bash
-    serialize_kofam_models.py -d path/to/profiles/ -k path/to/ko_list -b path/to/database.pkl.gz
+    serialize_kofam_models -d path/to/profiles/ -k path/to/ko_list -b path/to/database.pkl.gz
     ```
 
 * #### Using the serialized database files:
@@ -58,26 +58,26 @@ Recommended usage for `PyKofamSearch` is on systems with 1) high RAM;  2) large 
 
     ```bash
     # Full database
-    pykofamsearch.py -i test/test.faa.gz  -o output.tsv -b ~/Databases/KOFAM/database.pkl.gz -p=-1
+    pykofamsearch -i test/test.faa.gz  -o output.tsv -b ~/Databases/KOFAM/database.pkl.gz -p=-1
 
     # Enzymes only
-    pykofamsearch.py -i test/test.faa.gz  -o output.enzymes.tsv -b ~/Databases/KOFAM/database.enzymes.pkl.gz -p=-1
+    pykofamsearch -i test/test.faa.gz  -o output.enzymes.tsv -b ~/Databases/KOFAM/database.enzymes.pkl.gz -p=-1
     ```
 
 
 * #### Grouping hits by query protein:
 
     ```bash
-    reformat_pykofamsearch.py -i pykofamsearch_output.tsv -o pykofamsearch_output.reformatted.tsv
+    reformat_pykofamsearch -i pykofamsearch_output.tsv -o pykofamsearch_output.reformatted.tsv
     ```
 
 #### Options:
 
 ```
-$ pykofamsearch.py -h
-usage: pykofamsearch.py -i <proteins.fasta> -o <output.tsv> -d
+$ pykofamsearch -h
+usage: pykofamsearch -i <proteins.fasta> -o <output.tsv> -d
 
-    Running: pykofamsearch.py v2024.4.18 via Python v3.10.14 | /Users/jolespin/miniconda3/envs/kofamscan_env/bin/python3.10
+    Running: pykofamsearch v2024.4.18 via Python v3.10.14 | /Users/jolespin/miniconda3/envs/kofamscan_env/bin/python3.10
 
 options:
 -h, --help            show this help message and exit
@@ -97,8 +97,6 @@ HMMSearch arguments:
 -e EVALUE, --evalue EVALUE
                         E-value threshold [Default: 0.1]
 -a, --all_hits        Return all hits and do not use curated threshold. Not recommended for large queries.
--t, --threshold_scale THRESHOLD_SCALE
-                        Multiplier for the curated thresholds. Higher values will make the annotation more strict [Default: 1.0]
 
 Database arguments:
 -d DATABASE_DIRECTORY, --database_directory DATABASE_DIRECTORY
@@ -110,7 +108,7 @@ Database arguments:
 
 #### Outputs:
 
-* From **pykofamsearch.py**:
+* From **pykofamsearch**:
 
     | id_protein                 | id_ko  | threshold | score     | e-value      | definition                                                 |
     |----------------------------|--------|-----------|-----------|--------------|------------------------------------------------------------|
@@ -120,7 +118,7 @@ Database arguments:
     | SRR13615825__k127_23043_1  | K00033 | 157.6     | 3.598e+02 | 8.14325e-108 | 6-phosphogluconate dehydrogenase [EC:1.1.1.44 1.1.1.343]   |
     | SRR13615825__k127_278295_3 | K00042 | 389.27    | 3.941e+02 | 2.58098e-118 | 2-hydroxy-3-oxopropionate reductase [EC:1.1.1.60]          |
 
-* From **reformat_pykofamsearch.py**:
+* From **reformat_pykofamsearch**:
 
     | id_protein                 | number_of_hits | ids                  | names                                                                                                     | evalues                      | scores                                                     |
     |----------------------------|----------------|----------------------|-----------------------------------------------------------------------------------------------------------|------------------------------|------------------------------------------------------------|
@@ -130,7 +128,7 @@ Database arguments:
     | SRR13615825__k127_23043_1  | 1              | ['K00033']           | ['6-phosphogluconate dehydrogenase [EC:1.1.1.44 1.1.1.343]']                                              | [8.14325e-108]               | [359.8]                                                    |
     | SRR13615825__k127_72951_1  | 1              | ['K00053']           | ['ketol-acid reductoisomerase [EC:1.1.1.86]']                                                             | [1.54591e-108]               | [362.2]                                                    |
 
-* From **reformat_pykofamsearch.py** with **-b/--best_hits_only**:
+* From **reformat_pykofamsearch** with **-b/--best_hits_only**:
 
     | id_protein                 | id     | name                                                     | evalue       | score |
     |----------------------------|--------|----------------------------------------------------------|--------------|-------|

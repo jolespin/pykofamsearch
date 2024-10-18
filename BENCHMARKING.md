@@ -5,7 +5,7 @@
 #### 12 threads
 
 ```
-$ pykofamsearch.py -i data/test.faa.gz  -o pykofamsearch.cpu12.tsv -b ~/Databases/KOFAM/database.pkl -p=12
+$ pykofamsearch -i data/test.faa.gz  -o pykofamsearch.cpu12.tsv -b ~/Databases/KOFAM/database.pkl -p=12
 Loading serialized KOFAM database
 Performing HMMSearch: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 26162/26162 [02:22<00:00, 183.46it/s]
 
@@ -16,7 +16,7 @@ sys	0m18.592s
 
 #### Single thread
 ```
-$ pykofamsearch.py -i data/test.faa.gz  -o pykofamsearch.tsv -b ~/Databases/KOFAM/database.pkl -p=1
+$ pykofamsearch -i data/test.faa.gz  -o pykofamsearch.tsv -b ~/Databases/KOFAM/database.pkl -p=1
 Loading serialized KOFAM database
 Performing HMMSearch: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 26162/26162 [21:05<00:00, 20.68it/s]
 
@@ -28,7 +28,7 @@ sys	0m21.951s
 ### Enzymes Only
 #### 12 threads
 ```
-$ pykofamsearch.py -i data/test.faa.gz  -o pykofamsearch.enzymes.cpu12.tsv -b ~/Databases/KOFAM/database.enzymes.pkl -p=12
+$ pykofamsearch -i data/test.faa.gz  -o pykofamsearch.enzymes.cpu12.tsv -b ~/Databases/KOFAM/database.enzymes.pkl -p=12
 Loading serialized KOFAM database
 Performing HMMSearch: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10544/10544 [00:50<00:00, 210.46it/s]
 
@@ -39,7 +39,7 @@ sys	0m5.767s
 
 #### Single thread
 ```
-$ pykofamsearch.py -i data/test.faa.gz  -o pykofamsearch.enzymes.tsv -b ~/Databases/KOFAM/database.enzymes.pkl -p=1
+$ pykofamsearch -i data/test.faa.gz  -o pykofamsearch.enzymes.tsv -b ~/Databases/KOFAM/database.enzymes.pkl -p=1
 Loading serialized KOFAM database
 Performing HMMSearch: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10544/10544 [07:33<00:00, 23.26it/s]
 
