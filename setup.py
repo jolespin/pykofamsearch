@@ -20,10 +20,10 @@ setup(name='pykofamsearch',
     entry_points={
         'console_scripts': [
             'pykofamsearch=pykofamsearch.pykofamsearch:main',   # Executes pykofamsearch.main()
-            'reformat_enzymes=pykofamsearch.reformat_enzymes:main',  # Executes reformat_enzymes.main()
             'reformat_pykofamsearch=pykofamsearch.reformat_pykofamsearch:main',  # Executes reformat_pykofamsearch.main()
             'serialize_kofam_models=pykofamsearch.serialize_kofam_models:main',  # Executes serialize_kofam_models.main()
             'subset_serialized_models=pykofamsearch.subset_serialized_models:main',  # Executes subset_serialized_models.main()
+            # 'reformat_enzymes=pykofamsearch.reformat_enzymes:main',  # Executes reformat_enzymes.main()
         ],
     },
     #  scripts=[

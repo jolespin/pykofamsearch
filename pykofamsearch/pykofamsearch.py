@@ -11,7 +11,7 @@ from pyhmmer import hmmsearch
 # from pandas import notnull
 
 __program__ = os.path.split(sys.argv[0])[-1]
-__version__ = "2024.7.8"
+__version__ = "2024.11.7"
 
 # Filter 
 def filter_hmmsearch_threshold(
@@ -157,7 +157,7 @@ def main(args=None):
             f_output = open(opts.output, "w")
 
     if not opts.no_header:
-        print("id_protein", "id_ko", "threshold", "score", "e-value", "definition", sep="\t", file=f_output)
+        print("id_protein", "id_ko", "threshold", "score", "e-value", "definition", "enzyme_commission", sep="\t", file=f_output)
         
     # Input
     # =====
@@ -184,6 +184,7 @@ def main(args=None):
             threshold = data["threshold"]
             score_type = data["score_type"]
             definition = data["definition"]
+            enzyme_commission = data["enzyme_commission"]
             for hit in hits:
                 if hit.included:
                     result = filter_hmmsearch_threshold(hit, threshold, opts.threshold_scale, score_type, return_failed_threshold=False)
@@ -196,6 +197,7 @@ def main(args=None):
                             "{:0.3f}".format(score), 
                             "{:0.5e}".format(evalue), 
                             definition, 
+                            enzyme_commission,
                         sep="\t", 
                         file=f_output,
                         )
@@ -208,6 +210,7 @@ def main(args=None):
             threshold = data["threshold"]
             score_type = data["score_type"]
             definition = data["definition"]
+            enzyme_commission = data["enzyme_commission"]
             for hit in hits:
                 if hit.included:
                     result = filter_hmmsearch_threshold(hit, threshold, opts.threshold_scale, score_type, return_failed_threshold=True)
@@ -220,6 +223,7 @@ def main(args=None):
                         "{:0.3f}".format(score), 
                         "{:0.5e}".format(evalue), 
                         definition, 
+                        enzyme_commission,
                     sep="\t", 
                     file=f_output,
                     )

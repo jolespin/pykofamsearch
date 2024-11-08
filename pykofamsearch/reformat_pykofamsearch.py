@@ -6,7 +6,7 @@ import pandas as pd
 
 
 __program__ = os.path.split(sys.argv[0])[-1]
-__version__ = "2024.6.8"
+__version__ = "2024.11.7"
 
 def main(args=None):
     # Path info
@@ -50,10 +50,10 @@ def main(args=None):
     
     if opts.best_hits_only:
         output = defaultdict(dict)
-        for line in tqdm(f_input, desc="Reading PyKofamSearch"):
+        for line in tqdm(f_input, desc="Reading PyKOfamSearch"):
             line = line.strip()
             if line:
-                id_protein, id_ko, threshold, score, evalue, definition = line.split("\t")
+                id_protein, id_ko, threshold, score, evalue, definition, enzyme_commission = line.split("\t")
                 score = float(score)
                 evalue = float(evalue)
                 update = True
@@ -66,24 +66,27 @@ def main(args=None):
                     output[id_protein]["name"] = definition
                     output[id_protein]["evalue"] = evalue
                     output[id_protein]["score"] = score
+                    output[id_protein]["enzyme_commission"] = eval(enzyme_commission)
         df_output = pd.DataFrame(output).T
         if df_output.empty:
-            df_output = pd.Dataframe(columns=["id", "name", "evalue", "score"])
+            df_output = pd.Dataframe(columns=["id", "name", "evalue", "score", "enzyme_commission"])
     else:
         try:
             output = defaultdict(lambda: defaultdict(list))
             for line in tqdm(f_input, desc="Reading PyKofamSearch"):
                 line = line.strip()
                 if line:
-                    id_protein, id_ko, threshold, score, evalue, definition = line.split("\t")
+                    id_protein, id_ko, threshold, score, evalue, definition, enzyme_commission = line.split("\t")
                     output[id_protein]["ids"].append(id_ko)
                     output[id_protein]["names"].append(definition)
                     output[id_protein]["evalues"].append(float(evalue))
                     output[id_protein]["scores"].append(float(score))
+                    output[id_protein]["enzyme_commissions"].append(eval(enzyme_commission))
             df_output = pd.DataFrame(output).T
             df_output.insert(0, "number_of_hits", df_output["ids"].map(len))
+            df_output["enzyme_commissions"] = df_output["enzyme_commissions"].map(lambda x:list(set.union(*x)))
         except KeyError:
-            df_output = pd.DataFrame(columns=["number_of_hits", "ids", "names", "evalues", "scores"])
+            df_output = pd.DataFrame(columns=["number_of_hits", "ids", "names", "evalues", "scores", "enzyme_commissions"])
     df_output.index.name = "id_protein"
 
     if opts.format == "pickle":

@@ -30,26 +30,35 @@ Official benchmarking for `hmmsearch` algorithm implemented in `PyHMMER`  agains
 <img src="images/pyhmmer-benchmarking.jpeg" alt="drawing" width="500"/>
 
 ### Usage:
-Recommended usage for `PyKofamSearch` is on systems with 1) high RAM;  2) large numbers of threads; and/or 3) reading/writing to disk is charged (e.g., AWS EFS).  Also useful when querying a large number of proteins. 
+Recommended usage for `PyKOfamSearch` is on systems with 1) high RAM;  2) large numbers of threads; and/or 3) reading/writing to disk is charged (e.g., AWS EFS).  Also useful when querying a large number of proteins. 
 
-* #### Using the official KOfam database files:
+* #### Downloading the database:
 
+    ##### Online mode:
+    ```bash
+    # Download and serialize database
+    serialize_kofam_models -o path/to/database_directory/
+    ```
+
+    ##### Offline mode:
     ```bash
     # Download database
     DATABASE_DIRECTORY=/path/to/database_directory/
-    mkdir -p ${DATABASE_DIRECTORY}/Annotate/KOFAM/
-    wget -v -O - ftp://ftp.genome.jp/pub/db/kofam/ko_list.gz | gzip -d > ${DATABASE_DIRECTORY}/Annotate/KOFAM/ko_list
+    mkdir -p ${DATABASE_DIRECTORY}/Annotate/KOfam/
+    wget -v -O - ftp://ftp.genome.jp/pub/db/kofam/ko_list.gz | gzip -d > ${DATABASE_DIRECTORY}/Annotate/KOfam/ko_list
     wget -v -c ftp://ftp.genome.jp/pub/db/kofam/profiles.tar.gz -O - |  tar -xz
-    mv profiles ${DATABASE_DIRECTORY}/Annotate/KOFAM/
+    mv profiles ${DATABASE_DIRECTORY}/Annotate/KOfam/
 
-    # Run PyKofamSearch
-    pykofamsearch -i test/test.faa.gz  -o output.tsv -d ${DATABASE_DIRECTORY}/Annotate/KOFAM -p=-1
+    # Serialize database
+    serialize_kofam_models -d path/to/profiles/ -k path/to/ko_list -b path/to/database.pkl.gz
     ```
 
-* #### Build a serialized database:
+
+* #### Using the official KOfam database files (not serialized):
 
     ```bash
-    serialize_kofam_models -d path/to/profiles/ -k path/to/ko_list -b path/to/database.pkl.gz
+    # Run PyKofamSearch
+    pykofamsearch -i test/test.faa.gz  -o output.tsv -d ${DATABASE_DIRECTORY}/Annotate/KOfam -p=-1
     ```
 
 * #### Using the serialized database files:
@@ -58,10 +67,10 @@ Recommended usage for `PyKofamSearch` is on systems with 1) high RAM;  2) large 
 
     ```bash
     # Full database
-    pykofamsearch -i test/test.faa.gz  -o output.tsv -b ~/Databases/KOFAM/database.pkl.gz -p=-1
+    pykofamsearch -i test/test.faa.gz  -o output.tsv -b ~/Databases/KOfam/database.pkl.gz -p=-1
 
     # Enzymes only
-    pykofamsearch -i test/test.faa.gz  -o output.enzymes.tsv -b ~/Databases/KOFAM/database.enzymes.pkl.gz -p=-1
+    pykofamsearch -i test/test.faa.gz  -o output.enzymes.tsv -b ~/Databases/KOfam/database.enzymes.pkl.gz -p=-1
     ```
 
 
@@ -148,10 +157,10 @@ Database arguments:
 * Larralde M, Zeller G. PyHMMER: a Python library binding to HMMER for efficient sequence analysis. Bioinformatics. 2023 May 4;39(5):btad214. doi: 10.1093/bioinformatics/btad214. PMID: 37074928; PMCID: PMC10159651.
 
 #### Notes:
-`PyKofamSearch` output is *slightly* different than `KofamScan`.  For example, in the test case the number of significant hits from `KofamScan` is 1188 while `PyKofamSearch` is 1190.  All hits in from `KofamScan` are in `PyKofamSearch` output.
+`PyKOfamSearch` output is *slightly* different than `KofamScan`.  For example, in the test case the number of significant hits from `KofamScan` is 1188 while `PyKofamSearch` is 1190.  All hits in from `KofamScan` are in `PyKOfamSearch` output.
 
 #### License:
 
-The code for `PyKofamSearch` is licensed under an MIT License
+The code for `PyKOfamSearch` is licensed under an MIT License
 
 Please contact jolespin@newatlantis.io regarding any licensing concerns.
