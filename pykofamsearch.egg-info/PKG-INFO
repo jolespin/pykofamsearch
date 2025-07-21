@@ -1,12 +1,19 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: pykofamsearch
-Version: 2024.7.8
+Version: 2024.7.21
 Summary: Fast implementation of KofamScan optimized for high-memory systems using PyHmmer
-Home-page: https://github.com/new-atlantis-labs/pykofamsearch-stable
+Home-page: https://github.com/jolespin/pykofamsearch
 Author: Josh L. Espinoza
-Author-email: jolespin@newatlantis.io, jol.espinoz@gmail.com
+Author-email: jol.espinoz@gmail.com
 License: MIT License
 License-File: LICENSE
 Requires-Dist: pyhmmer>=0.10.12
 Requires-Dist: pandas
 Requires-Dist: tqdm
+Dynamic: author
+Dynamic: author-email
+Dynamic: home-page
+Dynamic: license
+Dynamic: license-file
+Dynamic: requires-dist
+Dynamic: summary
