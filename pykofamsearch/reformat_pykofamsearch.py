@@ -16,7 +16,7 @@ def main(args=None):
     description = """
     Running: {} v{} via Python v{} | {}""".format(__program__, __version__, sys.version.split(" ")[0], sys.executable)
     usage = "{} -i <input.tsv> -o <output.tsv> -f <format> ".format(__program__)
-    epilog = "Copyright 2024 New Atlantis Labs (jolespin@newatlantis.io)"
+    epilog = "PyKOfamSearch"
 
     # Parser
     parser = argparse.ArgumentParser(description=description, usage=usage, epilog=epilog, formatter_class=argparse.RawTextHelpFormatter)
