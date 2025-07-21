@@ -159,6 +159,3 @@ Database arguments:
 #### Notes:
 `PyKOfamSearch` output is *slightly* different than `KofamScan`.  For example, in the test case the number of significant hits from `KofamScan` is 1188 while `PyKofamSearch` is 1190.  All hits in from `KofamScan` are in `PyKOfamSearch` output.
 
-#### License:
-
-The code for `PyKOfamSearch` is licensed under an MIT License
