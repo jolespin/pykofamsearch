@@ -11,7 +11,7 @@ from pyhmmer import hmmsearch
 # from pandas import notnull
 
 __program__ = os.path.split(sys.argv[0])[-1]
-__version__ = "2024.11.7"
+__version__ = "2024.11.9"
 
 # Filter 
 def filter_hmmsearch_threshold(
@@ -51,17 +51,19 @@ def main(args=None):
     description = """
     Running: {} v{} via Python v{} | {}""".format(__program__, __version__, sys.version.split(" ")[0], sys.executable)
     usage = "{} -i <proteins.fasta> -o <output.tsv> -d ".format(__program__)
-    epilog = "Copyright 2024 New Atlantis Labs (jolespin@newatlantis.io)"
+    epilog = "PyKOfamSearch"
 
     # Parser
     parser = argparse.ArgumentParser(description=description, usage=usage, epilog=epilog, formatter_class=argparse.RawTextHelpFormatter)
 
     # Pipeline
     parser.add_argument("--verbosity", type=int, default=1, help="Verbosity of missing KOfams [Default: 1]")
+    parser.add_argument('-v', '--version', action='version', version=__version__)
 
     parser_io = parser.add_argument_group('I/O arguments')
     parser_io.add_argument("-i","--proteins", type=str, default="stdin", help = "path/to/proteins.fasta. stdin does not stream and loads everything into memory. [Default: stdin]")
     parser_io.add_argument("-o","--output", type=str, default="stdout", help = "path/to/output.tsv [Default: stdout]")
+    parser_io.add_argument("-s", "--subset", type=str, help = "path/to/identifiers.list where HMM identifiers are on a separate line used to subset the database. Only HMMs in the subset will be used.")
     parser_io.add_argument("--no_header", action="store_true", help = "No header")
 
     parser_utility = parser.add_argument_group('Utility arguments')
@@ -91,6 +93,7 @@ def main(args=None):
     if opts.n_jobs > cpus_available:
         warnings.warn("--n_jobs {} but only {} cpus are available. Adjusting --n_jobs to {}".format(opts.n_jobs, cpus_available, cpus_available))
         opts.n_jobs = cpus_available
+        
 
     # Database
     # ========
@@ -143,9 +146,32 @@ def main(args=None):
                         name_to_hmm[hmm.name.decode()] = hmm
             except FileNotFoundError:
                 missing_kos.add(id_ko)
+                
+    # Subset
+    # ======
+    if opts.subset:
+        subset_kos = set()
+        with open(opts.subset, "r") as f:
+            for line in f:
+                if line:
+                    if not line.startswith("#"):
+                        subset_kos.add(line.strip())
+        print("Unique subset: {} KOfams".format(len(subset_kos)), file=sys.stderr)
+        print("Subset missing from database: {} KOfams".format(len(subset_kos - set(ko_to_data.keys()))), file=sys.stderr)
+    else:
+        subset_kos = set(ko_to_data.keys())
+        
+    # Ignore
+    # ======
+    ignore_kos = set(ko_to_data.keys()) - subset_kos
+    if ignore_kos:
+        for id_ko in ignore_kos:
+            if id_ko in ko_to_data:
+                del ko_to_data[id_ko]
+            if id_ko in name_to_hmm:
+                del name_to_hmm[id_ko]
 
-
-
+    
     # Output
     # ======
     if opts.output == "stdout":

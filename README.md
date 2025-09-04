@@ -12,6 +12,7 @@ pip install pykofamsearch
 * pyhmmer >=0.10.12
 * pandas
 * tqdm
+* biopython
 
 
 ### Benchmarking
@@ -92,25 +93,25 @@ options:
 -h, --help            show this help message and exit
 
 I/O arguments:
--i PROTEINS, --proteins PROTEINS
+  -i, --proteins PROTEINS
                         path/to/proteins.fasta. stdin does not stream and loads everything into memory. [Default: stdin]
--o OUTPUT, --output OUTPUT
-                        path/to/output.tsv [Default: stdout]
---no_header           No header
+  -o, --output OUTPUT   path/to/output.tsv [Default: stdout]
+  -s, --subset SUBSET   path/to/identifiers.list where HMM identifiers are on a separate line used to subset the database. Only HMMs in the subset will be used.
+  --no_header           No header
 
 Utility arguments:
--p N_JOBS, --n_jobs N_JOBS
-                        Number of threads to use [Default: 1]
+  -p, --n_jobs N_JOBS   Number of threads to use [Default: 1]
 
 HMMSearch arguments:
--e EVALUE, --evalue EVALUE
-                        E-value threshold [Default: 0.1]
--a, --all_hits        Return all hits and do not use curated threshold. Not recommended for large queries.
+  -e, --evalue EVALUE   E-value threshold [Default: 0.1]
+  -a, --all_hits        Return all hits and do not use curated threshold. Not recommended for large queries.
+  -t, --threshold_scale THRESHOLD_SCALE
+                        Multiplier for the curated thresholds. Higher values will make the annotation more strict [Default: 1.0]
 
 Database arguments:
--d DATABASE_DIRECTORY, --database_directory DATABASE_DIRECTORY
+  -d, --database_directory DATABASE_DIRECTORY
                         path/to/kofam_database_directory/ cannot be used with -b/-serialized_database
--b SERIALIZED_DATABASE, --serialized_database SERIALIZED_DATABASE
+  -b, --serialized_database SERIALIZED_DATABASE
                         path/to/database.pkl cannot be used with -d/--database_directory
 ```
 
@@ -159,3 +160,8 @@ Database arguments:
 #### Notes:
 `PyKOfamSearch` output is *slightly* different than `KofamScan`.  For example, in the test case the number of significant hits from `KofamScan` is 1188 while `PyKofamSearch` is 1190.  All hits in from `KofamScan` are in `PyKOfamSearch` output.
 
+#### License:
+
+The code for `PyKOfamSearch` is licensed under an MIT License
+
+Please contact jolespin@newatlantis.io regarding any licensing concerns.

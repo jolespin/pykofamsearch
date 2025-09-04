@@ -1,0 +1,9 @@
+graft pykofamsearch
+include README.md
+include LICENSE
+include requirements.txt
+include MANIFEST.in
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *~
+global-exclude __pycache__
