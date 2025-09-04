@@ -1,5 +1,10 @@
 ##### Daily Change Log:
 
+* [2024.11.9] - Added `requirements.txt` and `MANIFEST.in` with `biopython` now a dependency
+* [2024.11.9] - Changed download location in `serialize_kofam_models.py` from `kofam_data` to `data`
+* [2024.11.9] - Added `--subset` option to include only a subset of KOfam in analysis. Can be useful for selecting only KOfams associated with enzymes and modules.
+* [2024.11.8] - `serialize_kofam_models` writes intermediate files to `output_directory/data/` instead of `output_directory/kofam_data/`
+* [2024.11.8] - `serialize_kofam_models` now reads in chunks and writes to temporary file with progressbars
 * [2024.11.8] - Changed `enzyme_commissions` type in `reformat_pykofamsearch` from `set` to `list` for consistency with `veba --module annotate`
 * [2024.11.7] - Added enzyme commission (EC) identifiers to `pykofamsearch`/`reformat_pykofamsearch` output and deprecated `reformat_enzymes.py`
 * [2024.11.7] - Added online (download) and offline modes to `serialize_kofam_models` and automatically parsed enzyme commission (EC) identifiers
@@ -10,8 +15,7 @@
 * [2024.4.25] - Changed default version of PyHmmer to 0.10.12 because of [PyHmmer Issue #67](https://github.com/althonos/pyhmmer/issues/67)
 
 ##### Pending
-* Add script to download data and transform metadata table to include a column for EC
 * Add length cutoff option
-* Add enzyme information to relevant KOs during serialization
 * Add `bin/` directory and move executables to it.
+* Add alignment coverage to output
 

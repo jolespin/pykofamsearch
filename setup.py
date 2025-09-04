@@ -3,19 +3,19 @@ from setuptools import setup
 # Version
 exec(open('pykofamsearch/__init__.py').read())
 
+# Read requirements from requirements.txt
+with open("requirements.txt", "r") as f:
+    requirements = [line.strip() for line in f if line.strip() and not line.startswith('#')]
+    
 setup(name='pykofamsearch',
       version=__version__,
       description='Fast implementation of KofamScan optimized for high-memory systems using PyHmmer',
       url='https://github.com/jolespin/pykofamsearch',
       author='Josh L. Espinoza',
-      author_email='jol.espinoz@gmail.com',
+      author_email='jolespin@newatlantis.io, jol.espinoz@gmail.com',
       license='MIT License',
       packages=["pykofamsearch"],
-      install_requires=[
-      "pyhmmer >=0.10.12",
-      "pandas",
-      "tqdm",
-      ],
+      install_requires=requirements,
     include_package_data=False,
     entry_points={
         'console_scripts': [

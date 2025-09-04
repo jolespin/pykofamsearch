@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys, os, glob, gzip, warnings, argparse, pickle, subprocess, tarfile, shutil
+import sys, os, glob, gzip, warnings, argparse, pickle, subprocess, tarfile, shutil, tempfile
 from datetime import datetime
 from collections import defaultdict
 from urllib.request import urlopen
@@ -7,7 +7,7 @@ from tqdm import tqdm
 from pyhmmer.plan7 import HMMFile
 
 __program__ = os.path.split(sys.argv[0])[-1]
-__version__ = "2024.11.7"
+__version__ = "2024.11.8"
 
 def check_mode(opts):
     if opts.output_directory and opts.serialized_database:
@@ -21,33 +21,70 @@ def check_mode(opts):
     
 
 def download_kofam_data_from_ftp(output_directory, ko_list_url, profiles_url):
-    # Create directory if it doesn't exist
+
+    
     os.makedirs(output_directory, exist_ok=True)
 
     # Download and decompress ko_list.gz
-    print(f"Downloading ko_list.gz from {ko_list_url}", file=sys.stderr)
+    print(f"Downloading ko_list.gz from {ko_list_url} to {output_directory}/ko_list", file=sys.stderr)
     ko_list_path = os.path.join(output_directory, "ko_list")
     
-    with (
-        urlopen(ko_list_url) as response,
-        gzip.open(response, 'rb') as gz_file,
-        open(ko_list_path, 'wb') as out_file,
-        ):
-            shutil.copyfileobj(gz_file, out_file)
+    with urlopen(ko_list_url) as response:
+        with gzip.open(response, 'rb') as gz_file:
+            with open(ko_list_path, 'wb') as out_file:
+                shutil.copyfileobj(gz_file, out_file, length=16*1024)
     print("ko_list successfully downloaded and decompressed", file=sys.stderr)
 
-    # Download and extract profiles.tar.gz
-    print(f"Downloading profiles.tar.gz from {profiles_url}", file=sys.stderr)
-
-    # Extract profiles.tar.gz    
-    with (
-        urlopen(profiles_url) as response,
-        tarfile.open(fileobj=response, mode='r:gz') as tar,
-        ): 
-            tar.extractall(path=output_directory)
+    # Download and extract profiles.tar.gz using a temporary file
+    print(f"Downloading profiles.tar.gz from {profiles_url} to {output_directory}/profiles/", file=sys.stderr)
+    
+    with tempfile.NamedTemporaryFile(suffix='.tar.gz', delete=True) as temp_tar:
+        # Download with progress bar
+        with urlopen(profiles_url) as response:
+            total_size = int(response.headers.get('content-length', 0))
+            progress_bar = tqdm(total=total_size, unit='B', unit_scale=True, desc="Downloading")
+            while True:
+                chunk = response.read(16*1024)
+                if not chunk:
+                    break
+                temp_tar.write(chunk)
+                progress_bar.update(len(chunk))
+            progress_bar.close()
+        
+        # Ensure all data is written to disk
+        temp_tar.flush()
+        
+        # Extract with progress bar
+        with tarfile.open(temp_tar.name, mode='r:gz') as tar:
+            members = tar.getmembers()
+            progress_bar = tqdm(members, desc="Extracting", total=len(members))
+            for member in members:
+                tar.extract(member, path=output_directory)
+                progress_bar.update(1)
+            progress_bar.close()
+            
     print("profiles.tar.gz successfully downloaded and extracted", file=sys.stderr)
     
 def parse_enzyme_commission_from_definition(definition:str):
+    """
+    Parse enzyme commission from KOfam definition
+
+    Parameters
+    ----------
+    definition : str
+        KOfam definition
+
+    Returns
+    -------
+    enzymes : set
+        Set of enzymes
+
+    Raises
+    ------
+    ValueError
+        If the definition is invalid
+    """
+
     enzymes = set()
     if "[EC:" in definition:
         fields = definition.split("[EC:")
@@ -98,12 +135,12 @@ def main(args=None):
         # Download KOFAM data
         # ===================
         download_kofam_data_from_ftp(
-            output_directory=os.path.join(opts.output_directory, "kofam_data"),
+            output_directory=os.path.join(opts.output_directory, "data"),
             ko_list_url=opts.ko_list_url,
             profiles_url=opts.profiles_url
         )
-        opts.ko_list = os.path.join(opts.output_directory, "kofam_data", "ko_list")
-        opts.profiles = os.path.join(opts.output_directory, "kofam_data", "profiles")
+        opts.ko_list = os.path.join(opts.output_directory, "data", "ko_list")
+        opts.profiles = os.path.join(opts.output_directory, "data", "profiles")
         opts.serialized_database = os.path.join(opts.output_directory, "database.pkl.gz")
         with open(os.path.join(opts.output_directory, "database.version"), "w") as f:
             print(database_version, file=f)
