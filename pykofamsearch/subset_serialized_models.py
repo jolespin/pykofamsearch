@@ -3,9 +3,9 @@ import sys, os, glob, gzip, warnings, argparse, pickle
 from collections import defaultdict
 from tqdm import tqdm
 from pyhmmer.plan7 import HMMFile
+from . import __version__
 
 __program__ = os.path.split(sys.argv[0])[-1]
-__version__ = "2024.9.24"
 
 def main(args=None):
     # Options
@@ -21,6 +21,8 @@ def main(args=None):
     # Parser
     parser = argparse.ArgumentParser(description=description, usage=usage, epilog=epilog, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--verbosity", type=int, default=1, help="Verbosity of missing KOfams [Default: 1]")
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+
 
     # Pipeline
     parser_database = parser.add_argument_group('Database arguments')

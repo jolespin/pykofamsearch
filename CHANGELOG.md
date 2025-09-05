@@ -1,5 +1,6 @@
 ##### Daily Change Log:
 
+* [2025.9.5] - Pinned `pyhmmer` version >=0.10.2,<0.11
 * [2024.11.9] - Added `requirements.txt` and `MANIFEST.in` with `biopython` now a dependency
 * [2024.11.9] - Changed download location in `serialize_kofam_models.py` from `kofam_data` to `data`
 * [2024.11.9] - Added `--subset` option to include only a subset of KOfam in analysis. Can be useful for selecting only KOfams associated with enzymes and modules.

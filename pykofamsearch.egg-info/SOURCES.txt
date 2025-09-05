@@ -4,7 +4,6 @@ README.md
 requirements.txt
 setup.py
 pykofamsearch/.DS_Store
-pykofamsearch/Icon
 pykofamsearch/__init__.py
 pykofamsearch/pykofamsearch.py
 pykofamsearch/reformat_pykofamsearch.py

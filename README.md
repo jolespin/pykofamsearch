@@ -164,4 +164,4 @@ Database arguments:
 
 The code for `PyKOfamSearch` is licensed under an MIT License
 
-Please contact jolespin@newatlantis.io regarding any licensing concerns.
+Please contact jol.espinoz@gmail.com regarding any licensing concerns.

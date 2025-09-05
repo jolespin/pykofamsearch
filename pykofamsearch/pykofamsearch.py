@@ -6,12 +6,11 @@ from tqdm import tqdm
 from pyhmmer.plan7 import HMMFile
 from pyhmmer.easel import SequenceFile, TextSequence, Alphabet
 from pyhmmer import hmmsearch
-# from . import __version__
+from . import __version__
 
 # from pandas import notnull
 
 __program__ = os.path.split(sys.argv[0])[-1]
-__version__ = "2024.11.9"
 
 # Filter 
 def filter_hmmsearch_threshold(

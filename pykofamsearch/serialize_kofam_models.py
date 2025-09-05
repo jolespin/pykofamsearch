@@ -5,9 +5,9 @@ from collections import defaultdict
 from urllib.request import urlopen
 from tqdm import tqdm
 from pyhmmer.plan7 import HMMFile
+from . import __version__
 
 __program__ = os.path.split(sys.argv[0])[-1]
-__version__ = "2024.11.8"
 
 def check_mode(opts):
     if opts.output_directory and opts.serialized_database:
@@ -110,6 +110,7 @@ def main(args=None):
     # Parser
     parser = argparse.ArgumentParser(description=description, usage=usage, epilog=epilog, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("--verbosity", type=int, default=1, help="Verbosity of missing KOfams [Default: 1]")
+    parser.add_argument('-v', '--version', action='version', version=__version__)
 
     # Pipeline
     parser_offline = parser.add_argument_group('Offline arguments')

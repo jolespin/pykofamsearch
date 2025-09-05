@@ -3,10 +3,10 @@ import sys, os, argparse, gzip
 from collections import defaultdict
 from tqdm import tqdm
 import pandas as pd
+from . import __version__
 
 
 __program__ = os.path.split(sys.argv[0])[-1]
-__version__ = "2024.11.7"
 
 def main(args=None):
     # Path info
@@ -20,6 +20,8 @@ def main(args=None):
 
     # Parser
     parser = argparse.ArgumentParser(description=description, usage=usage, epilog=epilog, formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('-v', '--version', action='version', version=__version__)
+
     # Pipeline
     parser.add_argument("-i","--input", type=str, default="stdin", help = "path/to/input.tsv. The results of `pykofamsearch.py` [Default: stdin]")
     parser.add_argument("-o","--output", type=str, default="stdout", help = "path/to/output.tsv [Default: stdout]")
