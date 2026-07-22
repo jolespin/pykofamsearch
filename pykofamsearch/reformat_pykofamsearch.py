@@ -48,14 +48,22 @@ def main(args=None):
             f_input = open(opts.input, "r")
 
     if not opts.no_header:
-        next(f_input)
-    
+        header_line = next(f_input).strip()
+        has_strict_threshold = header_line.count("\t") >= 7
+
+    else:
+        has_strict_threshold = None
+
     if opts.best_hits_only:
         output = defaultdict(dict)
         for line in tqdm(f_input, desc="Reading PyKOfamSearch"):
             line = line.strip()
             if line:
-                id_protein, id_ko, threshold, score, evalue, definition, enzyme_commission = line.split("\t")
+                fields = line.split("\t")
+                id_protein, id_ko, threshold, score, evalue, definition, enzyme_commission = fields[:7]
+                strict_threshold = fields[7] if len(fields) > 7 else None
+                if has_strict_threshold is None:
+                    has_strict_threshold = len(fields) > 7
                 score = float(score)
                 evalue = float(evalue)
                 update = True
@@ -69,26 +77,40 @@ def main(args=None):
                     output[id_protein]["evalue"] = evalue
                     output[id_protein]["score"] = score
                     output[id_protein]["enzyme_commission"] = eval(enzyme_commission)
+                    if has_strict_threshold:
+                        output[id_protein]["strict_threshold"] = strict_threshold
         df_output = pd.DataFrame(output).T
         if df_output.empty:
-            df_output = pd.Dataframe(columns=["id", "name", "evalue", "score", "enzyme_commission"])
+            columns = ["id", "name", "evalue", "score", "enzyme_commission"]
+            if has_strict_threshold:
+                columns.append("strict_threshold")
+            df_output = pd.DataFrame(columns=columns)
     else:
         try:
             output = defaultdict(lambda: defaultdict(list))
             for line in tqdm(f_input, desc="Reading PyKofamSearch"):
                 line = line.strip()
                 if line:
-                    id_protein, id_ko, threshold, score, evalue, definition, enzyme_commission = line.split("\t")
+                    fields = line.split("\t")
+                    id_protein, id_ko, threshold, score, evalue, definition, enzyme_commission = fields[:7]
+                    strict_threshold = fields[7] if len(fields) > 7 else None
+                    if has_strict_threshold is None:
+                        has_strict_threshold = len(fields) > 7
                     output[id_protein]["ids"].append(id_ko)
                     output[id_protein]["names"].append(definition)
                     output[id_protein]["evalues"].append(float(evalue))
                     output[id_protein]["scores"].append(float(score))
                     output[id_protein]["enzyme_commissions"].append(eval(enzyme_commission))
+                    if has_strict_threshold:
+                        output[id_protein]["strict_thresholds"].append(strict_threshold)
             df_output = pd.DataFrame(output).T
             df_output.insert(0, "number_of_hits", df_output["ids"].map(len))
             df_output["enzyme_commissions"] = df_output["enzyme_commissions"].map(lambda x:list(set.union(*x)))
         except KeyError:
-            df_output = pd.DataFrame(columns=["number_of_hits", "ids", "names", "evalues", "scores", "enzyme_commissions"])
+            columns = ["number_of_hits", "ids", "names", "evalues", "scores", "enzyme_commissions"]
+            if has_strict_threshold:
+                columns.append("strict_thresholds")
+            df_output = pd.DataFrame(columns=columns)
     df_output.index.name = "id_protein"
 
     if opts.format == "pickle":
