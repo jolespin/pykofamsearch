@@ -41,6 +41,27 @@ def filter_hmmsearch_threshold(
         evalue = hit.evalue
         return (threshold, score, evalue)
 
+def filter_heuristic(
+    hit,
+    threshold:float,
+    threshold_scale:float,
+    score_type:str,
+    heuristic_e_value:float,
+    heuristic_bitscore_fraction:float,
+    ):
+    if not score_type or not threshold:
+        return None
+    scaled_threshold = round(threshold * threshold_scale, 2)
+    if score_type == "domain":
+        score = hit.best_domain.score
+        evalue = hit.best_domain.i_evalue
+    else:
+        score = hit.score
+        evalue = hit.evalue
+    if evalue <= heuristic_e_value and score > (heuristic_bitscore_fraction * scaled_threshold):
+        return (scaled_threshold, score)
+    return None
+
 def main(args=None):
     # Options
     # =======
@@ -74,6 +95,11 @@ def main(args=None):
     parser_hmmsearch.add_argument("-a", "--all_hits", action="store_true", help="Return all hits and do not use curated threshold. Not recommended for large queries.")
     parser_hmmsearch.add_argument("-t","--threshold_scale", type=float, default=1.0, help = "Multiplier for the curated thresholds. Higher values will make the annotation more strict [Default: 1.0]")
 
+    parser_heuristic = parser.add_argument_group('Heuristic arguments')
+    parser_heuristic.add_argument("--anvio_bitscore_heuristic", action="store_true", help="Enable the anvi'o-style bitscore relaxation heuristic to rescue annotations that narrowly miss the curated threshold. Cannot be used with --all_hits.")
+    parser_heuristic.add_argument("--heuristic_e_value", type=float, default=1e-5, help="Maximum e-value for a hit to be considered by the heuristic [Default: 1e-5]")
+    parser_heuristic.add_argument("--heuristic_bitscore_fraction", type=float, default=0.75, help="Fraction of the curated threshold; hit bitscore must exceed fraction * threshold [Default: 0.75]")
+
     parser_database = parser.add_argument_group('Database arguments')
     parser_database.add_argument("-d", "--database_directory", type=str, help="path/to/kofam_database_directory/ cannot be used with -b/-serialized_database")
     parser_database.add_argument("-b", "--serialized_database", type=str, help="path/to/database.pkl cannot be used with -d/--database_directory")
@@ -83,6 +109,9 @@ def main(args=None):
     opts = parser.parse_args()
     opts.script_directory  = script_directory
     opts.script_filename = script_filename
+
+    if opts.all_hits and opts.anvio_bitscore_heuristic:
+        parser.error("--all_hits and --anvio_bitscore_heuristic are mutually exclusive")
 
     # Threads
     # =======
@@ -182,7 +211,10 @@ def main(args=None):
             f_output = open(opts.output, "w")
 
     if not opts.no_header:
-        print("id_protein", "id_ko", "threshold", "score", "e-value", "definition", "enzyme_commission", sep="\t", file=f_output)
+        header_fields = ["id_protein", "id_ko", "threshold", "score", "e-value", "definition", "enzyme_commission"]
+        if opts.anvio_bitscore_heuristic:
+            header_fields.append("strict_threshold")
+        print(*header_fields, sep="\t", file=f_output)
         
     # Input
     # =====
@@ -199,8 +231,12 @@ def main(args=None):
         with SequenceFile(opts.proteins, format="fasta", digital=True) as f:
             proteins = f.read_block()#sequences=opts.sequences_per_block)
 
-    # Run HMMSearch  
+    # Run HMMSearch
     # =============
+    if opts.anvio_bitscore_heuristic:
+        annotated_genes = set()
+        gene_decent_hits = defaultdict(dict)
+
     # Only hits that pass threshold
     if not opts.all_hits:
         for hits in tqdm(hmmsearch(name_to_hmm.values(), proteins, cpus=opts.n_jobs, E=opts.evalue), desc="Performing HMMSearch", total=len(name_to_hmm)):
@@ -215,17 +251,28 @@ def main(args=None):
                     result = filter_hmmsearch_threshold(hit, threshold, opts.threshold_scale, score_type, return_failed_threshold=False)
                     if result:
                         scaled_threshold, score, evalue = result
-                        print(
-                            hit.name.decode(), 
-                            id_ko, 
-                            scaled_threshold, 
-                            "{:0.3f}".format(score), 
-                            "{:0.5e}".format(evalue), 
-                            definition, 
+                        output_fields = [
+                            hit.name.decode(),
+                            id_ko,
+                            scaled_threshold,
+                            "{:0.3f}".format(score),
+                            "{:0.5e}".format(evalue),
+                            definition,
                             enzyme_commission,
-                        sep="\t", 
-                        file=f_output,
+                        ]
+                        if opts.anvio_bitscore_heuristic:
+                            annotated_genes.add(hit.name.decode())
+                            output_fields.append(True)
+                        print(*output_fields, sep="\t", file=f_output)
+                    elif opts.anvio_bitscore_heuristic:
+                        heuristic_result = filter_heuristic(
+                            hit, threshold, opts.threshold_scale, score_type,
+                            opts.heuristic_e_value, opts.heuristic_bitscore_fraction,
                         )
+                        if heuristic_result:
+                            scaled_threshold, score = heuristic_result
+                            gene_id = hit.name.decode()
+                            gene_decent_hits[gene_id][id_ko] = (scaled_threshold, score, hit.evalue, definition, enzyme_commission)
 
     # Consider all hits even those that do not pass threshold
     else:
@@ -242,16 +289,38 @@ def main(args=None):
                     scaled_threshold, score, evalue = result
                     scaled_threshold = "" if scaled_threshold is None else scaled_threshold
                     print(
-                        hit.name.decode(), 
-                        id_ko, 
-                        scaled_threshold, 
-                        "{:0.3f}".format(score), 
-                        "{:0.5e}".format(evalue), 
-                        definition, 
+                        hit.name.decode(),
+                        id_ko,
+                        scaled_threshold,
+                        "{:0.3f}".format(score),
+                        "{:0.5e}".format(evalue),
+                        definition,
                         enzyme_commission,
-                    sep="\t", 
+                    sep="\t",
                     file=f_output,
                     )
+
+    # Heuristic rescue pass
+    if opts.anvio_bitscore_heuristic:
+        n_rescued = 0
+        for gene_id, ko_hits in gene_decent_hits.items():
+            if gene_id not in annotated_genes and len(ko_hits) == 1:
+                id_ko = next(iter(ko_hits))
+                scaled_threshold, score, evalue, definition, enzyme_commission = ko_hits[id_ko]
+                print(
+                    gene_id,
+                    id_ko,
+                    scaled_threshold,
+                    "{:0.3f}".format(score),
+                    "{:0.5e}".format(evalue),
+                    definition,
+                    enzyme_commission,
+                    False,
+                    sep="\t",
+                    file=f_output,
+                )
+                n_rescued += 1
+        print("Heuristic rescued: {} annotations".format(n_rescued), file=sys.stderr)
 
     # Output close
     if f_output != sys.stdout:

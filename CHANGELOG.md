@@ -1,5 +1,6 @@
 ##### Daily Change Log:
 
+* [v2026.7.21] - Added `--anvio_bitscore_heuristic` option to rescue annotations that narrowly miss KEGG's curated bitscore thresholds using the anvi'o-style relaxation heuristic. Includes `--heuristic_e_value` (default: 1e-5) and `--heuristic_bitscore_fraction` (default: 0.75) parameters. When enabled, adds a `strict_threshold` column to output. Updated `reformat_pykofamsearch` to handle the optional 8th column.
 * [2025.9.5] - Pinned `pyhmmer` version >=0.10.2,<0.11
 * [2024.11.9] - Added `requirements.txt` and `MANIFEST.in` with `biopython` now a dependency
 * [2024.11.9] - Changed download location in `serialize_kofam_models.py` from `kofam_data` to `data`

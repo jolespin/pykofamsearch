@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: pykofamsearch
-Version: 2025.9.5
+Version: 2026.7.21
 Summary: Fast implementation of KofamScan optimized for high-memory systems using PyHmmer
 Home-page: https://github.com/jolespin/pykofamsearch
 Author: Josh L. Espinoza

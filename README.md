@@ -75,6 +75,18 @@ Recommended usage for `PyKOfamSearch` is on systems with 1) high RAM;  2) large 
     ```
 
 
+* #### Using the anvi'o bitscore relaxation heuristic:
+
+    Rescue annotations that narrowly miss KEGG's curated bitscore thresholds. For unannotated genes, if all sub-threshold hits passing relaxed criteria point to the same KO, the annotation is rescued. When enabled, an 8th column `strict_threshold` is added (`True` = passed curated threshold, `False` = rescued by heuristic).
+
+    ```bash
+    # With default heuristic parameters (e-value=1e-5, bitscore_fraction=0.75)
+    pykofamsearch -i test/test.faa.gz -o output.tsv -b ~/Databases/KOfam/database.pkl.gz -p=-1 --anvio_bitscore_heuristic
+
+    # With custom heuristic parameters
+    pykofamsearch -i test/test.faa.gz -o output.tsv -b ~/Databases/KOfam/database.pkl.gz -p=-1 --anvio_bitscore_heuristic --heuristic_e_value 1e-3 --heuristic_bitscore_fraction 0.5
+    ```
+
 * #### Grouping hits by query protein:
 
     ```bash
@@ -87,10 +99,13 @@ Recommended usage for `PyKOfamSearch` is on systems with 1) high RAM;  2) large 
 $ pykofamsearch -h
 usage: pykofamsearch -i <proteins.fasta> -o <output.tsv> -d
 
-    Running: pykofamsearch v2024.4.18 via Python v3.10.14 | /Users/jolespin/miniconda3/envs/kofamscan_env/bin/python3.10
+    Running: pykofamsearch v2026.7.21 via Python v3.11.0 | /path/to/python
 
 options:
--h, --help            show this help message and exit
+  -h, --help            show this help message and exit
+  --verbosity VERBOSITY
+                        Verbosity of missing KOfams [Default: 1]
+  -v, --version         show program's version number and exit
 
 I/O arguments:
   -i, --proteins PROTEINS
@@ -108,6 +123,14 @@ HMMSearch arguments:
   -t, --threshold_scale THRESHOLD_SCALE
                         Multiplier for the curated thresholds. Higher values will make the annotation more strict [Default: 1.0]
 
+Heuristic arguments:
+  --anvio_bitscore_heuristic
+                        Enable the anvi'o-style bitscore relaxation heuristic to rescue annotations that narrowly miss the curated threshold. Cannot be used with --all_hits.
+  --heuristic_e_value HEURISTIC_E_VALUE
+                        Maximum e-value for a hit to be considered by the heuristic [Default: 1e-5]
+  --heuristic_bitscore_fraction HEURISTIC_BITSCORE_FRACTION
+                        Fraction of the curated threshold; hit bitscore must exceed fraction * threshold [Default: 0.75]
+
 Database arguments:
   -d, --database_directory DATABASE_DIRECTORY
                         path/to/kofam_database_directory/ cannot be used with -b/-serialized_database
@@ -120,13 +143,20 @@ Database arguments:
 
 * From **pykofamsearch**:
 
-    | id_protein                 | id_ko  | threshold | score     | e-value      | definition                                                 |
-    |----------------------------|--------|-----------|-----------|--------------|------------------------------------------------------------|
-    | SRR13615825__k127_135326_1 | K00012 | 377.73    | 6.245e+02 | 7.34282e-188 | UDPglucose 6-dehydrogenase [EC:1.1.1.22]                   |
-    | SRR13615825__k127_87070_1  | K00012 | 377.73    | 4.751e+02 | 1.15847e-142 | UDPglucose 6-dehydrogenase [EC:1.1.1.22]                   |
-    | SRR13615825__k127_278295_3 | K00020 | 348.7     | 3.639e+02 | 5.39377e-109 | 3-hydroxyisobutyrate dehydrogenase [EC:1.1.1.31]           |
-    | SRR13615825__k127_23043_1  | K00033 | 157.6     | 3.598e+02 | 8.14325e-108 | 6-phosphogluconate dehydrogenase [EC:1.1.1.44 1.1.1.343]   |
-    | SRR13615825__k127_278295_3 | K00042 | 389.27    | 3.941e+02 | 2.58098e-118 | 2-hydroxy-3-oxopropionate reductase [EC:1.1.1.60]          |
+    | id_protein                 | id_ko  | threshold | score     | e-value      | definition                                                 | enzyme_commission |
+    |----------------------------|--------|-----------|-----------|--------------|------------------------------------------------------------|-------------------|
+    | SRR13615825__k127_135326_1 | K00012 | 377.73    | 6.245e+02 | 7.34282e-188 | UDPglucose 6-dehydrogenase [EC:1.1.1.22]                   | {'1.1.1.22'}      |
+    | SRR13615825__k127_87070_1  | K00012 | 377.73    | 4.751e+02 | 1.15847e-142 | UDPglucose 6-dehydrogenase [EC:1.1.1.22]                   | {'1.1.1.22'}      |
+    | SRR13615825__k127_278295_3 | K00020 | 348.7     | 3.639e+02 | 5.39377e-109 | 3-hydroxyisobutyrate dehydrogenase [EC:1.1.1.31]           | {'1.1.1.31'}      |
+    | SRR13615825__k127_23043_1  | K00033 | 157.6     | 3.598e+02 | 8.14325e-108 | 6-phosphogluconate dehydrogenase [EC:1.1.1.44 1.1.1.343]   | {'1.1.1.44', '1.1.1.343'} |
+    | SRR13615825__k127_278295_3 | K00042 | 389.27    | 3.941e+02 | 2.58098e-118 | 2-hydroxy-3-oxopropionate reductase [EC:1.1.1.60]          | {'1.1.1.60'}      |
+
+* From **pykofamsearch** with **--anvio_bitscore_heuristic** (adds `strict_threshold` column):
+
+    | id_protein                 | id_ko  | threshold | score     | e-value      | definition                                                 | enzyme_commission | strict_threshold |
+    |----------------------------|--------|-----------|-----------|--------------|------------------------------------------------------------|-------------------|------------------|
+    | SRR13615825__k127_135326_1 | K00012 | 382.1     | 615.457   | 2.87926e-185 | UDPglucose 6-dehydrogenase [EC:1.1.1.22]                   | {'1.1.1.22'}      | True             |
+    | SRR13615825__k127_460528_2 | K00010 | 276.9     | 207.757   | 7.00805e-62  | myo-inositol 2-dehydrogenase [EC:1.1.1.18 1.1.1.369]      | {'1.1.1.369', '1.1.1.18'} | False |
 
 * From **reformat_pykofamsearch**:
 
